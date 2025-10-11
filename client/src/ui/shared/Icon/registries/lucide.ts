@@ -7,3 +7,5 @@ export const lucideRegistry = {
   close: X,
   spinner: Loader2,
 } as const;
+
+export type LucideName = keyof typeof lucideRegistry;

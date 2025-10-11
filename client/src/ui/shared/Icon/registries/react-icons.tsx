@@ -26,3 +26,5 @@ export const reactIconsRegistry = {
   close: adapt(FaTimes),
   spinner: adapt(FaSpinner),
 } as const;
+
+export type ReactIconsName = keyof typeof reactIconsRegistry;
