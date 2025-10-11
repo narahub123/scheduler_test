@@ -1,9 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
-import { TodoPage } from "../pages";
+import { LandingPage, TodoPage } from "../pages";
 
 export const router = createBrowserRouter([
   {
     path: "/",
+    element: <LandingPage />,
+  },
+  {
+    path: "/todos",
     element: <TodoPage />,
   },
 ]);
