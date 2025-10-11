@@ -1,73 +1,23 @@
-# React + TypeScript + Vite
+# Frontend 설정 요약
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 기술 스택
+- Vite + React 19
+- Tailwind CSS 4 + DaisyUI 5
+- TypeScript
 
-Currently, two official plugins are available:
+## Tailwind & DaisyUI 설정
+- `src/index.css`는 `@import "tailwindcss";`, `@plugin "daisyui";` 두 줄만 유지해 Tailwind 계층으로 스타일을 관리합니다.
+- DaisyUI 컴포넌트는 Tailwind 플러그인으로 자동 적용됩니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 글꼴 설정
+- `index.html` 헤더에 Google Fonts 링크를 추가해 나눔고딕을 불러옵니다.
+- `tailwind.config.ts`에서 `theme.extend.fontFamily.sans`에 `"Nanum Gothic"`을 앞에 배치해 `font-sans`가 나눔고딕을 기본으로 사용합니다.
 
-## React Compiler
+## 개발 명령어
+- `npm run dev`: 개발 서버 실행
+- `npm run build`: 프로덕션 번들 생성
+- `npm run lint`: ESLint 검사
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+## 확인 사항
+- 새 구성 후 `npm run lint`로 문제없는지 확인했습니다.
+- 브라우저에서 나눔고딕 적용 여부를 확인하려면 개발 서버 실행 후 UI를 검사하세요.
