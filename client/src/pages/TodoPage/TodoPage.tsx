@@ -1,5 +1,12 @@
+import { Button } from "../../ui";
+
 const TodoPage = () => {
-  return <div>TodoPage</div>;
+  return (
+    <div>
+      TodoPage
+      <Button className="btn-primary">버튼</Button>
+    </div>
+  );
 };
 
 export default TodoPage;
