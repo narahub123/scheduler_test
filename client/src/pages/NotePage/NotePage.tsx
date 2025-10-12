@@ -1,17 +1,17 @@
 import { useState } from "react";
+import { StruggleNote } from "../../ui";
+import type { NoteContentType, NoteType, StruggleNoteType } from "../../types";
 
-type NoteType =
-  | "none"
-  | "struggle"
-  | "study"
-  | "book"
-  | "money"
-  | "exercise"
-  | "lifelog"
-  | "work";
+const initialStruggleNoteValue = {
+  title: "",
+  background: "",
+  reason: "",
+  solution: "",
+} as NoteContentType;
 
 export const NotePage = () => {
   const [noteType, setNoteType] = useState<NoteType>("none");
+  const [note, setNote] = useState<NoteContentType>(initialStruggleNoteValue);
 
   const handleNoteTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const noteType = e.target.value as NoteType;
@@ -19,7 +19,7 @@ export const NotePage = () => {
     setNoteType(noteType);
   };
 
-  console.log(noteType);
+  console.log(noteType, note);
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="w-full flex justify-center">
@@ -27,8 +27,10 @@ export const NotePage = () => {
       </div>
       <div className="space-y-2 p-2">
         <div className="flex flex-col items-center">
-          <h2>노트 작성</h2>
           <div>
+            <h2>노트 작성</h2>
+          </div>
+          <div className="space-y-2">
             {/* 타입 설정 */}
             <div className="space-x-2">
               <label htmlFor="noteType">타입</label>
@@ -49,6 +51,11 @@ export const NotePage = () => {
               </select>
             </div>
             {/* 타입에 따른 템플릿 */}
+            {noteType === "struggle" ? (
+              <StruggleNote note={note as StruggleNoteType} setNote={setNote} />
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
