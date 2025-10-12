@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, LifelogPage, TodoPage } from "../pages";
+import { LandingPage, LifelogPage, NotePage, TodoPage } from "../pages";
 
 export const router = createBrowserRouter([
   {
@@ -13,5 +13,9 @@ export const router = createBrowserRouter([
   {
     path: "/lifelogs",
     element: <LifelogPage />,
+  },
+  {
+    path: "/notes",
+    element: <NotePage />,
   },
 ]);
