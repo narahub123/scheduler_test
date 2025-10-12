@@ -62,9 +62,9 @@ export const LifelogPage = () => {
         <h2 className="p-4 font-bold text-xl">라이프 로그</h2>
       </div>
       <div className="w-full h-full flex flex-col items-center">
-        <div>
-          {/* 캘린더로 표시? */}
-          <div>라이프 로그</div>
+        {/* 캘린더로 표시? */}
+        <div>라이프 로그</div>
+        <div className="border p-2">
           <div>
             <h2>라이프 로그 작성</h2>
           </div>
@@ -129,7 +129,7 @@ export const LifelogPage = () => {
               ></textarea>
             </div>
           </div>
-          <Button className="w-full">저장</Button>
+          <Button className="w-full btn-primary">저장</Button>
         </div>
       </div>
     </div>
