@@ -12,6 +12,11 @@ const LandingPage = () => {
         <Link to="/todos">
           <Button className="min-w-[150px] btn-primary">투두 리스트</Button>
         </Link>
+        <Link to="/lifelogs">
+          <Button className="min-w-[150px] btn-accent text-white">
+            라이프로그
+          </Button>
+        </Link>
         <Link to="/timelines">
           <Button className="min-w-[150px] btn-accent text-white">일정</Button>
         </Link>

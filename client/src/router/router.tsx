@@ -1,5 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, TodoPage } from "../pages";
+import { LandingPage, LifelogPage, TodoPage } from "../pages";
 
 export const router = createBrowserRouter([
   {
@@ -9,5 +9,9 @@ export const router = createBrowserRouter([
   {
     path: "/todos",
     element: <TodoPage />,
+  },
+  {
+    path: "/lifelogs",
+    element: <LifelogPage />,
   },
 ]);
