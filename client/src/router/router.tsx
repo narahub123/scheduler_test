@@ -1,6 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
-import { LandingPage, LifelogPage, NotePage, TodoPage } from "../pages";
-import { RapidLogging } from "../pages/RapidLogging/RapidLogging";
+import {
+  LandingPage,
+  LifelogPage,
+  NotePage,
+  RapidLoggingPage,
+  TodoPage,
+} from "../pages";
 
 export const router = createBrowserRouter([
   {
@@ -21,6 +26,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "/rapid-logging",
-    element: <RapidLogging />,
+    element: <RapidLoggingPage />,
   },
 ]);

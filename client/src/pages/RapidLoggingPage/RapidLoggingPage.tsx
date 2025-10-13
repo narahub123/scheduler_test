@@ -10,7 +10,7 @@ export type LoggingType =
   | "event"
   | "memo";
 
-export const RapidLogging = () => {
+export const RapidLoggingPage = () => {
   return (
     <div className="w-screen h-screen flex flex-col">
       <div className="w-full flex justify-center">
