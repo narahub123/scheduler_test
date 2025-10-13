@@ -32,3 +32,34 @@ export function todayYMD(
 ) {
   return formatDateYMD(new Date(), { timeZone: "Asia/Seoul", ...options });
 }
+
+// YYYY.MM.DD (day) 형식으로 변환 
+export function formatKoreanDate(
+  input: Date | string | number = new Date(),
+  timeZone: string = "Asia/Seoul"
+): string {
+  const date = input instanceof Date ? input : new Date(input);
+  if (isNaN(date.getTime())) throw new Error("Invalid date");
+
+  // ko-KR + weekday: 'short' => '월','화','수'...
+  const fmt = new Intl.DateTimeFormat("ko-KR", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    weekday: "short",
+  });
+
+  const parts = fmt.formatToParts(date);
+  const get = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((p) => p.type === type)?.value ?? "";
+
+  const y = get("year"); // '2025'
+  const m = get("month"); // '04'
+  const d = get("day"); // '05'
+  let w = get("weekday"); // '토' 또는 '토요일' (환경에 따라)
+  // 혹시 '토요일'처럼 긴 형태면 '요일' 제거
+  if (w.endsWith("요일")) w = w.slice(0, -2);
+
+  return `${y}.${m}.${d} (${w})`;
+}
