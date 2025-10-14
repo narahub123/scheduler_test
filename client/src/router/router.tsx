@@ -2,10 +2,12 @@ import { createBrowserRouter } from "react-router-dom";
 import {
   LandingPage,
   LifelogPage,
+  MonthlyLogPage,
   NotePage,
   RapidLoggingPage,
   TodoPage,
 } from "../pages";
+import { MonthlyCalendar, MonthlyTodos } from "../ui";
 
 export const router = createBrowserRouter([
   {
@@ -27,5 +29,19 @@ export const router = createBrowserRouter([
   {
     path: "/rapid-logging",
     element: <RapidLoggingPage />,
+  },
+  {
+    path: "/monthly-log",
+    element: <MonthlyLogPage />,
+    children: [
+      {
+        index: true,
+        element: <MonthlyCalendar />,
+      },
+      {
+        path: "to-dos",
+        element: <MonthlyTodos />,
+      },
+    ],
   },
 ]);
