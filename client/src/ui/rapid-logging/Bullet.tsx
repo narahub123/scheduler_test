@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { LoggingType } from "../../../pages/RapidLoggingPage/RapidLoggingPage";
+import type { LoggingType } from "../../pages";
 
 export const Bullet = () => {
   const [loggingType, setLoggingType] = useState<LoggingType>("task");
