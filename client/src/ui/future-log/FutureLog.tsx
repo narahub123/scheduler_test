@@ -81,6 +81,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     });
   };
 
+  // === 특정 문자 위치로 커서 놓기 ===
   const setCaretByCharIndex = (el: HTMLElement, index: number) => {
     const sel = window.getSelection();
     const range = document.createRange();
@@ -136,6 +137,35 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     });
   };
 
+  // === (추가) 위/아래 행으로 이동 ===
+  const moveFocusToSibling = (
+    fromId: string,
+    dir: "prev" | "next",
+    column: number
+  ) => {
+    setLogs((prev) => {
+      const idx = prev.findIndex((it) => it.id === fromId);
+      if (idx < 0) return prev;
+      const toIdx = dir === "prev" ? idx - 1 : idx + 1;
+      if (toIdx < 0 || toIdx >= prev.length) return prev;
+
+      const toItem = prev[toIdx];
+      const el = nodeMapRef.current[toItem.id] ?? null;
+      if (el) {
+        const len = (el.textContent ?? "").length;
+        const col = Math.min(column, len);
+        requestAnimationFrame(() => setCaretByCharIndex(el, col));
+      }
+      return prev; // 상태 변경 없음(포커스만 이동)
+    });
+  };
+
+  // Bullet용 콜백으로 내려줄 함수
+  const handleMovePrev = (id: string, column: number) =>
+    moveFocusToSibling(id, "prev", column);
+  const handleMoveNext = (id: string, column: number) =>
+    moveFocusToSibling(id, "next", column);
+
   return (
     <div className={["p-2 flex flex-col", className].filter(Boolean).join(" ")}>
       <div>
@@ -153,6 +183,8 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
           onTypeChange={handleTypeChange} // ✅ 타입 변경
           onSplit={handleSplit} // ✅ Enter로 새 Bullet 추가
           onMergePrev={onMergePrev}
+          onMovePrev={handleMovePrev}
+          onMoveNext={handleMoveNext}
         />
       ))}
     </div>
