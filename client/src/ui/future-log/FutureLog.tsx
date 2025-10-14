@@ -19,7 +19,8 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
   const nodeMapRef = useRef<Record<string, HTMLDivElement | null>>({});
 
   const setNode = (id: string) => (el: HTMLDivElement | null) => {
-    nodeMapRef.current[id] = el;
+    if (el) nodeMapRef.current[id] = el;
+    else delete nodeMapRef.current[id];
   };
 
   const focusAtEnd = (el: HTMLDivElement | null) => {
@@ -46,14 +47,34 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
 
   // Enter(=Split): 현재 항목 뒤에 새 Bullet 삽입 후 포커스 이동
   const handleSplit = (id: string) => {
+    const el = nodeMapRef.current[id];
+    let head = "",
+      tail = "";
+
+    if (el) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const r = sel.getRangeAt(0);
+        const pos = r.startOffset;
+        const full = el.textContent ?? "";
+        // 단일 텍스트 노드 기준. (여러 노드면 별도 유틸 필요)
+        head = full.slice(0, pos);
+        tail = full.slice(pos);
+      }
+    }
+
     setLogs((prev) => {
       const idx = prev.findIndex((it) => it.id === id);
       if (idx < 0) return prev;
-      const newItem: LogItem = { id: makeId(), type: "task", text: "" };
-      const next = [...prev.slice(0, idx + 1), newItem, ...prev.slice(idx + 1)];
 
-      // 다음 틱에 포커스 이동
+      const newItem: LogItem = { id: makeId(), type: "task", text: tail };
+
+      const next = [...prev];
+      next[idx] = { ...next[idx], text: head }; // 현재 행 = 커서 앞
+      next.splice(idx + 1, 0, newItem); // 새 행 = 커서 뒤
+
       requestAnimationFrame(() => {
+        // 새 행으로 포커스 이동 + 끝으로
         focusAtEnd(nodeMapRef.current[newItem.id] ?? null);
       });
       return next;
