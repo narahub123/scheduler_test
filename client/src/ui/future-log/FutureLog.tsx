@@ -81,6 +81,61 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     });
   };
 
+  const setCaretByCharIndex = (el: HTMLElement, index: number) => {
+    const sel = window.getSelection();
+    const range = document.createRange();
+
+    // el 내부 텍스트 노드들을 순회하며 index 위치를 찾음
+    let rest = index;
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    let foundNode: Text | null = null;
+    while (walker.nextNode()) {
+      const t = walker.currentNode as Text;
+      const len = t.textContent?.length ?? 0;
+      if (rest <= len) {
+        foundNode = t;
+        break;
+      }
+      rest -= len;
+    }
+    if (foundNode) {
+      range.setStart(foundNode, Math.max(0, rest));
+    } else {
+      // 텍스트 노드가 없으면 끝으로
+      range.selectNodeContents(el);
+      range.collapse(false);
+    }
+    range.collapse(true);
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+    el.focus();
+  };
+
+  const onMergePrev = (id: string) => {
+    setLogs((prev) => {
+      const idx = prev.findIndex((it) => it.id === id);
+      if (idx <= 0) return prev;
+
+      const prevItem = prev[idx - 1];
+      const curItem = prev[idx];
+
+      const prevLen = (prevItem.text ?? "").length;
+      const merged = (prevItem.text ?? "") + (curItem.text ?? "");
+
+      const next = [...prev];
+      next[idx - 1] = { ...prevItem, text: merged };
+      next.splice(idx, 1);
+
+      // 렌더 후 이전 줄 끝으로 커서 이동
+      requestAnimationFrame(() => {
+        const el = nodeMapRef.current[prevItem.id] ?? null;
+        if (el) setCaretByCharIndex(el, prevLen);
+      });
+
+      return next;
+    });
+  };
+
   return (
     <div className={["p-2 flex flex-col", className].filter(Boolean).join(" ")}>
       <div>
@@ -97,6 +152,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
           onChange={handleChange} // ✅ 텍스트 변경
           onTypeChange={handleTypeChange} // ✅ 타입 변경
           onSplit={handleSplit} // ✅ Enter로 새 Bullet 추가
+          onMergePrev={onMergePrev}
         />
       ))}
     </div>

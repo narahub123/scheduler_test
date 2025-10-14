@@ -12,6 +12,7 @@ type Props = {
   onChange: (id: string, text: string) => void;
   onTypeChange: (id: string, t: LoggingType) => void;
   onSplit: (id: string) => void;
+  onMergePrev: (id: string) => void;
 };
 
 export const Bullet: FC<Props> = ({
@@ -22,6 +23,7 @@ export const Bullet: FC<Props> = ({
   onChange,
   onTypeChange,
   onSplit,
+  onMergePrev,
 }) => {
   const { type, text } = log; // ✅ text는 유지
   const composingRef = useRef(false);
@@ -55,6 +57,15 @@ export const Bullet: FC<Props> = ({
         onSplit(itemId); // 새 Bullet 추가
       }
     }
+
+    // Backspace: 비어 있으면 위 항목과 병합
+    if (e.key === "Backspace") {
+      const isAtStart = getIsCaretAtLineStart();
+      if (!isAtStart) return; // 맨 앞이 아니면 브라우저 기본 삭제 허용
+
+      e.preventDefault();
+      onMergePrev(itemId); // 부모에 병합 요청
+    }
   };
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
@@ -64,6 +75,18 @@ export const Bullet: FC<Props> = ({
 
   const handleLoggingTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     onTypeChange(itemId, e.target.value as LoggingType);
+  };
+
+  const getIsCaretAtLineStart = () => {
+    const sel = window.getSelection();
+    if (!sel || sel.rangeCount === 0) return false;
+    const r = sel.getRangeAt(0);
+    if (!r.collapsed) return false; // 범위 선택이면 병합 X
+    // div 기준 "문자 오프셋 0"인지 확인
+    const pre = document.createRange();
+    pre.selectNodeContents(divRef.current!);
+    pre.setEnd(r.startContainer, r.startOffset);
+    return (pre.toString() ?? "").length === 0;
   };
 
   return (
