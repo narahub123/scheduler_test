@@ -1,5 +1,4 @@
 import { formatKoreanDate } from "../utils";
-import { Bullet } from "../ui";
 
 export type LoggingType =
   | "task"
@@ -20,10 +19,7 @@ export const RapidLoggingPage = () => {
         <div>
           <h2>{formatKoreanDate(new Date())}</h2>
         </div>
-        <div className="w-60">
-          <Bullet />
-          <Bullet />
-        </div>
+        <div className="w-60"></div>
       </div>
     </div>
   );
