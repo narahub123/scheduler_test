@@ -27,6 +27,11 @@ const LandingPage = () => {
             먼슬리 로그
           </Button>
         </Link>
+        <Link to="/future-log">
+          <Button className="min-w-[150px] btn-accent text-white">
+            퓨처 로그
+          </Button>
+        </Link>
         <Link to="/timelines">
           <Button className="min-w-[150px] btn-accent text-white">일정</Button>
         </Link>

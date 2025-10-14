@@ -72,7 +72,7 @@ export const MonthlyCalendar = () => {
               const color =
                 day === 0 ? "text-red-500" : day === 6 ? "text-blue-500" : "";
               return (
-                <div key={i} className="w-100 flex gap-4 justify-center">
+                <div key={i} className="w-100 flex gap-4">
                   <span className="flex justify-center">
                     <select name="symbol" id="symbol">
                       <option value=""></option>
@@ -80,12 +80,14 @@ export const MonthlyCalendar = () => {
                       <option value="!">!</option>
                     </select>
                   </span>
-                  <span className={`flex justify-center ${color}`}>
-                    <p>{(i + 1).toString().padStart(2, "0")}</p>
-                  </span>
-                  <span className={`h-full flex justify-center ${color}`}>
-                    <p>{daysKor[day]}</p>
-                  </span>
+                  <div className={`flex justify-center`}>
+                    <p className={`${color}`}>
+                      {(i + 1).toString().padStart(2, "0")}
+                    </p>
+                  </div>
+                  <div className={`flex justify-center`}>
+                    <p className={`${color}`}>{daysKor[day]}</p>
+                  </div>
 
                   <span className="flex-1">
                     <input type="text" className="w-full p-1 border" />

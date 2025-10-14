@@ -4,3 +4,4 @@ export * from "./LifelogPage";
 export * from "./NotePage";
 export * from "./RapidLoggingPage";
 export * from "./MonthlyLogPage";
+export * from "./FutureLogPage";

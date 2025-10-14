@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import {
+  FutureLogPage,
   LandingPage,
   LifelogPage,
   MonthlyLogPage,
@@ -43,5 +44,9 @@ export const router = createBrowserRouter([
         element: <MonthlyTodos />,
       },
     ],
+  },
+  {
+    path: "future-log",
+    element: <FutureLogPage />,
   },
 ]);
