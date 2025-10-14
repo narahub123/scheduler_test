@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { StruggleNote } from "../../ui";
-import type { NoteContentType, NoteType, StruggleNoteType } from "../../types";
+import type { NoteContentType, NoteType, StruggleNoteType } from "../types";
+import { StruggleNote } from "../ui";
 
 const initialStruggleNoteValue = {
   title: "",

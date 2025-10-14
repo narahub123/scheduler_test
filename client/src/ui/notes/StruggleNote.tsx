@@ -1,6 +1,6 @@
 import type { FC } from "react";
-import type { StruggleNoteType } from "../../../types";
-import { Button } from "../../shared";
+import type { StruggleNoteType } from "../../types";
+import { Button } from "../shared";
 
 interface StruggleNoteProps {
   note: StruggleNoteType;

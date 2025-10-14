@@ -1,5 +1,5 @@
-import { formatKoreanDate } from "../../utils";
-import { Bullet } from "../../ui";
+import { formatKoreanDate } from "../utils";
+import { Bullet } from "../ui";
 
 export type LoggingType =
   | "task"

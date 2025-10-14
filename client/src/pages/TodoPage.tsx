@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { formatDateYMD } from "../../utils";
-import { Button } from "../../ui";
+import { formatDateYMD } from "../utils";
+import { Button } from "../ui";
 
 // 실제로는 타입에 대한 규칙을 생성해서 적용해야 함 주의
 type TodoType = "none" | "schedule" | "workout" | "home" | "work";
 
-const TodoPage = () => {
+export const TodoPage = () => {
   const [todoType, setTodoType] = useState<TodoType>("none");
   const [date, setDate] = useState(formatDateYMD(new Date()));
   const [text, setText] = useState("");
@@ -92,5 +92,3 @@ const TodoPage = () => {
     </div>
   );
 };
-
-export default TodoPage;

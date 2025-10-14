@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
-import { Button } from "../../ui";
+import { Button } from "../ui";
 
-const LandingPage = () => {
+export const LandingPage = () => {
   return (
     // screen과 full의 차이 정리 할 것
     <div className="w-screen h-screen flex flex-col">
@@ -45,5 +45,3 @@ const LandingPage = () => {
     </div>
   );
 };
-
-export default LandingPage;
