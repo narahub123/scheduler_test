@@ -15,6 +15,7 @@ type Props = {
   onMergePrev: (id: string) => void;
   onMovePrev: (id: string, column: number) => void; // ↑ 이동
   onMoveNext: (id: string, column: number) => void; // ↓ 이동
+  onIndentDelta: (id: string, delta: 1 | -1) => void; // 들여쓰기
 };
 
 export const Bullet: FC<Props> = ({
@@ -28,8 +29,9 @@ export const Bullet: FC<Props> = ({
   onMergePrev,
   onMovePrev,
   onMoveNext,
+  onIndentDelta,
 }) => {
-  const { type, text } = log; // ✅ text는 유지
+  const { type, text, indent } = log;
   const composingRef = useRef(false);
   const divRef = useRef<HTMLDivElement | null>(null);
 
@@ -63,6 +65,14 @@ export const Bullet: FC<Props> = ({
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (composingRef.current) return;
+
+    // Tab: 들여쓰기/내어쓰기
+    if (e.key === "Tab") {
+      e.preventDefault();
+      onIndentDelta(itemId, e.shiftKey ? -1 : +1);
+      return;
+    }
+
     if (e.key === "Enter") {
       e.preventDefault();
       if (e.shiftKey) {
@@ -145,7 +155,10 @@ export const Bullet: FC<Props> = ({
   };
 
   return (
-    <div className="flex justify-start gap-2">
+    <div
+      className="flex justify-start gap-2"
+      style={{ paddingLeft: `${indent * 16}px` }}
+    >
       <BulletSelector
         loggingType={type}
         options={options}

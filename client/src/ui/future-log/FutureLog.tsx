@@ -3,7 +3,12 @@ import { Bullet } from "../rapid-logging";
 import { dailyLogOptions } from "../../data";
 import type { LoggingType } from "../../pages";
 
-export type LogItem = { id: string; type: LoggingType; text: string };
+export type LogItem = {
+  id: string;
+  type: LoggingType;
+  text: string;
+  indent: number;
+};
 
 const makeId = () => Math.random().toString(36).slice(2, 9); // 예시용. nanoid 권장.
 
@@ -12,7 +17,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
   className,
 }) => {
   const [logs, setLogs] = useState<LogItem[]>([
-    { id: makeId(), type: "task", text: "" },
+    { id: makeId(), type: "task", text: "", indent: 0 },
   ]);
 
   // 각 Bullet의 contentEditable div를 보관할 ref 맵
@@ -45,7 +50,8 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     );
   };
 
-  // Enter(=Split): 현재 항목 뒤에 새 Bullet 삽입 후 포커스 이동
+  // Enter(=Split): 현재 항목 뒤에 새 Bullet 삽입 후 포커스 이동, 새 항목에 현재 indent 승계
+  // Enter로 줄 나누기: 새 항목에 현재 indent 승계
   const handleSplit = (id: string) => {
     const el = nodeMapRef.current[id];
     let head = "",
@@ -57,7 +63,6 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
         const r = sel.getRangeAt(0);
         const pos = r.startOffset;
         const full = el.textContent ?? "";
-        // 단일 텍스트 노드 기준. (여러 노드면 별도 유틸 필요)
         head = full.slice(0, pos);
         tail = full.slice(pos);
       }
@@ -67,16 +72,46 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
       const idx = prev.findIndex((it) => it.id === id);
       if (idx < 0) return prev;
 
-      const newItem: LogItem = { id: makeId(), type: "task", text: tail };
+      const base = prev[idx];
+      const newItem: LogItem = {
+        id: makeId(),
+        type: base.type,
+        text: tail,
+        indent: base.indent,
+      };
 
       const next = [...prev];
-      next[idx] = { ...next[idx], text: head }; // 현재 행 = 커서 앞
-      next.splice(idx + 1, 0, newItem); // 새 행 = 커서 뒤
+      next[idx] = { ...base, text: head };
+      next.splice(idx + 1, 0, newItem);
 
       requestAnimationFrame(() => {
-        // 새 행으로 포커스 이동 + 끝으로
         focusAtEnd(nodeMapRef.current[newItem.id] ?? null);
       });
+      return next;
+    });
+  };
+
+  // 병합: 이전 줄 indent를 따르고 커서는 이전 줄의 병합 지점으로
+  const onMergePrev = (id: string) => {
+    setLogs((prev) => {
+      const idx = prev.findIndex((it) => it.id === id);
+      if (idx <= 0) return prev;
+
+      const prevItem = prev[idx - 1];
+      const curItem = prev[idx];
+
+      const prevLen = (prevItem.text ?? "").length;
+      const merged = (prevItem.text ?? "") + (curItem.text ?? "");
+
+      const next = [...prev];
+      next[idx - 1] = { ...prevItem, text: merged }; // indent 유지(= prevItem.indent)
+      next.splice(idx, 1);
+
+      requestAnimationFrame(() => {
+        const el = nodeMapRef.current[prevItem.id] ?? null;
+        if (el) setCaretByCharIndex(el, prevLen);
+      });
+
       return next;
     });
   };
@@ -112,31 +147,6 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     el.focus();
   };
 
-  const onMergePrev = (id: string) => {
-    setLogs((prev) => {
-      const idx = prev.findIndex((it) => it.id === id);
-      if (idx <= 0) return prev;
-
-      const prevItem = prev[idx - 1];
-      const curItem = prev[idx];
-
-      const prevLen = (prevItem.text ?? "").length;
-      const merged = (prevItem.text ?? "") + (curItem.text ?? "");
-
-      const next = [...prev];
-      next[idx - 1] = { ...prevItem, text: merged };
-      next.splice(idx, 1);
-
-      // 렌더 후 이전 줄 끝으로 커서 이동
-      requestAnimationFrame(() => {
-        const el = nodeMapRef.current[prevItem.id] ?? null;
-        if (el) setCaretByCharIndex(el, prevLen);
-      });
-
-      return next;
-    });
-  };
-
   // === (추가) 위/아래 행으로 이동 ===
   const moveFocusToSibling = (
     fromId: string,
@@ -166,6 +176,27 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
   const handleMoveNext = (id: string, column: number) =>
     moveFocusToSibling(id, "next", column);
 
+  // 들여쓰기 단계 제한
+  const MIN_INDENT = 0;
+  const MAX_INDENT = 6;
+
+  // 특정 항목의 indent 변경 (+1: 들여쓰기, -1: 내어쓰기)
+  const handleIndentDelta = (id: string, delta: 1 | -1) => {
+    setLogs((prev) =>
+      prev.map((it) =>
+        it.id === id
+          ? {
+              ...it,
+              indent: Math.min(
+                MAX_INDENT,
+                Math.max(MIN_INDENT, it.indent + delta)
+              ),
+            }
+          : it
+      )
+    );
+  };
+
   return (
     <div className={["p-2 flex flex-col", className].filter(Boolean).join(" ")}>
       <div>
@@ -185,6 +216,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
           onMergePrev={onMergePrev}
           onMovePrev={handleMovePrev}
           onMoveNext={handleMoveNext}
+          onIndentDelta={handleIndentDelta}
         />
       ))}
     </div>
