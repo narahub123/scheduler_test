@@ -1,5 +1,10 @@
 import { useLayoutEffect, useRef, type FC } from "react";
-import { BulletSelector } from "../shared";
+import {
+  BulletSelector,
+  SignifierSelector,
+  type SignifierOpitionType,
+  type SignifierType,
+} from "../shared";
 import type { BulletOptionType } from "../../data";
 import type { LoggingType } from "../../pages";
 import type { LogItem } from "../future-log";
@@ -8,9 +13,11 @@ type Props = {
   itemId: string;
   log: LogItem;
   options: BulletOptionType[];
+  signifierOptions: SignifierOpitionType[];
   setNode: (el: HTMLDivElement | null) => void;
   onChange: (id: string, text: string) => void;
   onTypeChange: (id: string, t: LoggingType) => void;
+  onSignifierChange: (id: string, t: SignifierType) => void;
   onSplit: (id: string) => void;
   onMergePrev: (id: string) => void;
   onMovePrev: (id: string, column: number) => void; // ↑ 이동
@@ -22,16 +29,18 @@ export const Bullet: FC<Props> = ({
   itemId,
   log,
   options,
+  signifierOptions,
   setNode,
   onChange,
   onTypeChange,
+  onSignifierChange,
   onSplit,
   onMergePrev,
   onMovePrev,
   onMoveNext,
   onIndentDelta,
 }) => {
-  const { type, text, indent } = log;
+  const { type, text, indent, signifier } = log;
   const composingRef = useRef(false);
   const divRef = useRef<HTMLDivElement | null>(null);
 
@@ -142,6 +151,12 @@ export const Bullet: FC<Props> = ({
     onTypeChange(itemId, e.target.value as LoggingType);
   };
 
+  const handleSignifierTypeChange = (
+    e: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    onSignifierChange(itemId, e.target.value as SignifierType);
+  };
+
   const getIsCaretAtLineStart = () => {
     const sel = window.getSelection();
     if (!sel || sel.rangeCount === 0) return false;
@@ -159,6 +174,11 @@ export const Bullet: FC<Props> = ({
       className="flex justify-start gap-2"
       style={{ paddingLeft: `${indent * 16}px` }}
     >
+      <SignifierSelector
+        signifier={signifier}
+        options={signifierOptions}
+        onChange={handleSignifierTypeChange}
+      />
       <BulletSelector
         loggingType={type}
         options={options}

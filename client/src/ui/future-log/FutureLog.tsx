@@ -2,10 +2,12 @@ import { useRef, useState, type FC } from "react";
 import { Bullet } from "../rapid-logging";
 import { dailyLogOptions } from "../../data";
 import type { LoggingType } from "../../pages";
+import { dailyLogSignifierOptions, type SignifierType } from "../shared";
 
 export type LogItem = {
   id: string;
   type: LoggingType;
+  signifier: SignifierType;
   text: string;
   indent: number;
 };
@@ -17,7 +19,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
   className,
 }) => {
   const [logs, setLogs] = useState<LogItem[]>([
-    { id: makeId(), type: "task", text: "", indent: 0 },
+    { id: makeId(), type: "task", text: "", indent: 0, signifier: "" },
   ]);
 
   // 각 Bullet의 contentEditable div를 보관할 ref 맵
@@ -75,6 +77,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
       const base = prev[idx];
       const newItem: LogItem = {
         id: makeId(),
+        signifier: "",
         type: base.type,
         text: tail,
         indent: base.indent,
@@ -197,6 +200,13 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     );
   };
 
+  // signifier 변경
+  const handleSignifierChange = (id: string, nextType: SignifierType) => {
+    setLogs((prev) =>
+      prev.map((it) => (it.id === id ? { ...it, signifier: nextType } : it))
+    );
+  };
+
   return (
     <div className={["p-2 flex flex-col", className].filter(Boolean).join(" ")}>
       <div>
@@ -209,9 +219,11 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
           itemId={item.id}
           log={item}
           options={dailyLogOptions}
+          signifierOptions={dailyLogSignifierOptions}
           setNode={setNode(item.id)} // ✅ 각 Bullet의 div ref 등록
           onChange={handleChange} // ✅ 텍스트 변경
           onTypeChange={handleTypeChange} // ✅ 타입 변경
+          onSignifierChange={handleSignifierChange}
           onSplit={handleSplit} // ✅ Enter로 새 Bullet 추가
           onMergePrev={onMergePrev}
           onMovePrev={handleMovePrev}
