@@ -17,7 +17,7 @@ export const BulletSelector: FC<BulletSelectorProps> = ({
     <select
       onChange={handleLoggingTypeChange}
       value={loggingType}
-      className={`appearance-none outline-0 inline-block h-6 ${
+      className={`appearance-none outline-0 inline-block h-6 cursor-pointer ${
         loggingType === "irrelevant" ? "line-through" : ""
       }`}
     >

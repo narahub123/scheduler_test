@@ -18,7 +18,7 @@ export const SignifierSelector: FC<SignifierSelectorProps> = ({
       id="signifier"
       onChange={onChange}
       value={signifier}
-      className="appearance-none outline-0"
+      className="appearance-none outline-0 cursor-pointer"
     >
       {options.map((option) => {
         const { value, title, symbol } = option;
