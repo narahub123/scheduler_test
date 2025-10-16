@@ -170,7 +170,9 @@ export const Bullet: FC<Props> = ({
         role="textbox"
         aria-multiline="true"
         suppressContentEditableWarning
-        className="min-h-4 w-full break-words whitespace-pre-wrap outline-0"
+        className={`min-h-4 w-full break-words whitespace-pre-wrap outline-0 ${
+          type === "irrelevant" ? "line-through text-gray-500 " : ""
+        }`}
         onCompositionStart={() => (composingRef.current = true)}
         onCompositionEnd={(e) => {
           composingRef.current = false;

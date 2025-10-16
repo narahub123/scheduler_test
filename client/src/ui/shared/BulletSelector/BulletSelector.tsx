@@ -17,7 +17,9 @@ export const BulletSelector: FC<BulletSelectorProps> = ({
     <select
       onChange={handleLoggingTypeChange}
       value={loggingType}
-      className="appearance-none outline-0 inline-block h-6"
+      className={`appearance-none outline-0 inline-block h-6 ${
+        loggingType === "irrelevant" ? "line-through" : ""
+      }`}
     >
       {options.map((option) => (
         <option value={option.value} title={option.title} key={option.value}>
