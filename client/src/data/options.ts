@@ -1,7 +1,7 @@
-import type { LoggingType } from "../pages";
+import type { BulletType } from "../pages";
 
 export interface BulletOptionType {
-  value: LoggingType;
+  value: BulletType;
   title: string;
   symbol: string;
 }

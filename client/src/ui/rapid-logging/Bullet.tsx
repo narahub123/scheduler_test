@@ -6,7 +6,7 @@ import {
   type SignifierType,
 } from "../shared";
 import type { BulletOptionType } from "../../data";
-import type { LoggingType } from "../../pages";
+import type { BulletType } from "../../pages";
 import type { LogItem } from "../future-log";
 
 type Props = {
@@ -16,7 +16,7 @@ type Props = {
   signifierOptions: SignifierOpitionType[];
   setNode: (el: HTMLDivElement | null) => void;
   onChange: (id: string, text: string) => void;
-  onTypeChange: (id: string, t: LoggingType) => void;
+  onTypeChange: (id: string, t: BulletType) => void;
   onSignifierChange: (id: string, t: SignifierType) => void;
   onSplit: (id: string) => void;
   onMergePrev: (id: string) => void;
@@ -148,7 +148,7 @@ export const Bullet: FC<Props> = ({
   };
 
   const handleLoggingTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onTypeChange(itemId, e.target.value as LoggingType);
+    onTypeChange(itemId, e.target.value as BulletType);
   };
 
   const handleSignifierTypeChange = (
@@ -180,7 +180,7 @@ export const Bullet: FC<Props> = ({
         onChange={handleSignifierTypeChange}
       />
       <BulletSelector
-        loggingType={type}
+        bullet={type}
         options={options}
         handleLoggingTypeChange={handleLoggingTypeChange}
       />

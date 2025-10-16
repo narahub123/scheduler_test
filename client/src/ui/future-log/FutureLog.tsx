@@ -1,12 +1,12 @@
 import { useRef, useState, type FC } from "react";
 import { Bullet } from "../rapid-logging";
 import { dailyLogOptions } from "../../data";
-import type { LoggingType } from "../../pages";
+import type { BulletType } from "../../pages";
 import { dailyLogSignifierOptions, type SignifierType } from "../shared";
 
 export type LogItem = {
   id: string;
-  type: LoggingType;
+  type: BulletType;
   signifier: SignifierType;
   text: string;
   indent: number;
@@ -46,7 +46,7 @@ export const FutureLog: FC<{ month: number; className?: string }> = ({
     setLogs((prev) => prev.map((it) => (it.id === id ? { ...it, text } : it)));
   };
 
-  const handleTypeChange = (id: string, nextType: LoggingType) => {
+  const handleTypeChange = (id: string, nextType: BulletType) => {
     setLogs((prev) =>
       prev.map((it) => (it.id === id ? { ...it, type: nextType } : it))
     );

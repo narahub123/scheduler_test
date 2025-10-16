@@ -1,6 +1,6 @@
 import { formatKoreanDate } from "../utils";
 
-export type LoggingType =
+export type BulletType =
   | "task"
   | "completed"
   | "migrated"
