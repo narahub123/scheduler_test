@@ -32,6 +32,11 @@ export const LandingPage = () => {
             퓨처 로그
           </Button>
         </Link>
+        <Link to="/weekly">
+          <Button className="min-w-[150px] btn-accent text-white">
+            위클리 로그
+          </Button>
+        </Link>
         <Link to="/timelines">
           <Button className="min-w-[150px] btn-accent text-white">일정</Button>
         </Link>

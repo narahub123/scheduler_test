@@ -1,5 +1,10 @@
 import type { FormatYmdOptions } from "../types";
 
+type ChineseDateTimeFormatPart = {
+  type: Intl.DateTimeFormatPartTypes | "relatedYear" | "yearName";
+  value: string;
+};
+
 /** Date -> 'YYYY-MM-DD' (기본: 로컬 타임존) */
 export const formatDateYMD = (
   date: Date,
@@ -33,7 +38,7 @@ export function todayYMD(
   return formatDateYMD(new Date(), { timeZone: "Asia/Seoul", ...options });
 }
 
-// YYYY.MM.DD (day) 형식으로 변환 
+// YYYY.MM.DD (day) 형식으로 변환
 export function formatKoreanDate(
   input: Date | string | number = new Date(),
   timeZone: string = "Asia/Seoul"
@@ -62,4 +67,92 @@ export function formatKoreanDate(
   if (w.endsWith("요일")) w = w.slice(0, -2);
 
   return `${y}.${m}.${d} (${w})`;
+}
+
+// 해당 날짜가 올해의 몇 번째인지 계산하기
+export const calcNthDate = (target: Date): number => {
+  const year = target.getFullYear();
+  const month = target.getMonth();
+  const date = target.getDate();
+  return Array.from({ length: month + 1 })
+    .map((_, index) => index + 1)
+    .reduce((acc, cur) => {
+      if (cur === month + 1) {
+        return acc + date;
+      }
+
+      const day = new Date(year, cur, 0).getDate();
+      return acc + day;
+    }, 0);
+};
+
+// 해당 날짜가 몇번째 주인지 계산
+export const calcNthWeek = (target: Date) => {
+  const year = target.getFullYear();
+  const firstSat = 7 - new Date(year, 0, 1).getDay();
+
+  const nthDate = calcNthDate(target);
+
+  return Math.ceil((nthDate - firstSat) / 7) + 1;
+};
+
+// 해당 주 첫 번째 일
+export const calcFirstDateOfWeek = (target: Date) => {
+  const cp = new Date(target);
+  return new Date(cp.setDate(cp.getDate() - cp.getDay()));
+};
+
+/** Gregorian → (중국식 음력) 월/일 추출. 한국(서울) 기준.
+ *  주의: 윤달 여부를 알기 어렵고, 한국 천문연구원 기준과 드물게 1일 오차가 날 수 있습니다.
+ */
+/** Gregorian → 중국식 음력(대략치). 간지/월/일을 parts에서 안전하게 꺼냄 */
+export function toLunarRough(date: Date) {
+  const fmt = new Intl.DateTimeFormat("ko-u-ca-chinese", {
+    timeZone: "Asia/Seoul",
+    year: "numeric",
+    month: "numeric",
+    day: "numeric",
+  });
+
+  // 실제로 chinese 달력으로 포맷되는지 점검
+  const { calendar, timeZone } = fmt.resolvedOptions();
+  if (calendar !== "chinese") {
+    // 런타임이 chinese 달력을 지원하지 않는 상황(예: Node 소형 ICU)
+    return {
+      sexagenaryYear: null,
+      month: null,
+      day: null,
+      _reason: "no-chinese-calendar" as const,
+      calendar,
+      timeZone,
+    };
+  }
+
+  const parts = fmt.formatToParts(date) as ChineseDateTimeFormatPart[];
+
+  const first = (t: ChineseDateTimeFormatPart["type"]) =>
+    parts.find((p) => p.type === t)?.value ?? null;
+
+  const monthStr = first("month");
+  const dayStr = first("day");
+
+  let sexagenaryYear = first("yearName") ?? first("year");
+  if (!sexagenaryYear) {
+    // month/day를 함께 요청하면 간지(yearName)가 누락되는 런타임이 있어 추가 조회
+    const yearOnlyParts = new Intl.DateTimeFormat("ko-u-ca-chinese", {
+      timeZone: "Asia/Seoul",
+      year: "numeric",
+    }).formatToParts(date) as ChineseDateTimeFormatPart[];
+    sexagenaryYear =
+      yearOnlyParts.find((p) => p.type === "yearName")?.value ??
+      yearOnlyParts.find((p) => p.type === "year")?.value ??
+      null;
+  }
+
+  const relatedGregorianYear = first("relatedYear");
+
+  const month = monthStr ? Number(monthStr) : null;
+  const day = dayStr ? Number(dayStr) : null;
+
+  return { sexagenaryYear, relatedGregorianYear, month, day };
 }

@@ -7,6 +7,7 @@ import {
   NotePage,
   RapidLoggingPage,
   TodoPage,
+  WeeklyLogPage,
 } from "../pages";
 import { MonthlyCalendar, MonthlyTodos } from "../ui";
 
@@ -48,5 +49,9 @@ export const router = createBrowserRouter([
   {
     path: "future-log",
     element: <FutureLogPage />,
+  },
+  {
+    path: "weekly",
+    element: <WeeklyLogPage />,
   },
 ]);

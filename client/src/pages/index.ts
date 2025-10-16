@@ -5,3 +5,4 @@ export * from "./NotePage";
 export * from "./RapidLoggingPage";
 export * from "./MonthlyLogPage";
 export * from "./FutureLogPage";
+export * from "./WeeklyLogPage";
