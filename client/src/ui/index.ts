@@ -4,3 +4,4 @@ export * from "./rapid-logging";
 export * from "./monthly-log";
 export * from "./future-log";
 export * from "./weekly-log";
+export * from "./goals";

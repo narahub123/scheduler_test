@@ -6,3 +6,4 @@ export * from "./RapidLoggingPage";
 export * from "./MonthlyLogPage";
 export * from "./FutureLogPage";
 export * from "./WeeklyLogPage";
+export * from "./GoalsPage";

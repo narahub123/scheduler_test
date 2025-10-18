@@ -8,8 +8,16 @@ import {
   RapidLoggingPage,
   TodoPage,
   WeeklyLogPage,
+  GoalsPage,
 } from "../pages";
-import { MonthlyCalendar, MonthlyTodos } from "../ui";
+import {
+  BrainStorming,
+  GoalCollection,
+  GoalPractice,
+  GoalShorts,
+  MonthlyCalendar,
+  MonthlyTodos,
+} from "../ui";
 
 export const router = createBrowserRouter([
   {
@@ -53,5 +61,27 @@ export const router = createBrowserRouter([
   {
     path: "weekly",
     element: <WeeklyLogPage />,
+  },
+  {
+    path: "goals",
+    element: <GoalsPage />,
+    children: [
+      {
+        path: "collection",
+        element: <GoalCollection />,
+      },
+      {
+        path: "54321",
+        element: <GoalPractice />,
+      },
+      {
+        path: "short-goals",
+        element: <GoalShorts />,
+      },
+      {
+        path: "brainstorming",
+        element: <BrainStorming />,
+      },
+    ],
   },
 ]);

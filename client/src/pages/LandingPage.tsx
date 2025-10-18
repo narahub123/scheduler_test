@@ -12,6 +12,11 @@ export const LandingPage = () => {
         <Link to="/todos">
           <Button className="min-w-[150px] btn-primary">투두 리스트</Button>
         </Link>
+        <Link to="/goals">
+          <Button className="min-w-[150px] btn-accent text-white">
+            목표 컬렉션
+          </Button>
+        </Link>
         <Link to="/lifelogs">
           <Button className="min-w-[150px] btn-accent text-white">
             라이프로그
