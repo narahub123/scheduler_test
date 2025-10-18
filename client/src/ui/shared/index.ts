@@ -4,3 +4,4 @@ export * from "./BulletSelector";
 export * from "./SignifierSelector";
 export * from "./PageTitle";
 export * from "./Bullet";
+export * from "./BulletList";

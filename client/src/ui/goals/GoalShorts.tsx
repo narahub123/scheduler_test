@@ -1,36 +1,21 @@
-import { dailyLogOptions } from "../../data";
-import {
-  Bullet,
-  BulletProvider,
-  dailyLogSignifierOptions,
-  useBulletEngine,
-} from "../shared";
+import { BulletList } from "../shared";
 import { GoalTitle } from "./GoalTitle";
 
-const makeId = () => Math.random().toString(36).slice(2, 9); // 예시용. nanoid 권장.
-
 export const GoalShorts = () => {
-  const { api, logs } = useBulletEngine({
-    defaultValue: [
-      { id: makeId(), type: "task", text: "", indent: 0, signifier: "" },
-    ],
-    maxIndent: 6,
-    makeId,
-  });
   return (
     <div className="w-full p-4">
       <GoalTitle text="목표 나누기" />
-      <BulletProvider api={api}>
-        {logs.map((item) => (
-          <Bullet
-            key={item.id}
-            itemId={item.id}
-            log={item}
-            options={dailyLogOptions}
-            signifierOptions={dailyLogSignifierOptions}
-          />
-        ))}
-      </BulletProvider>
+      <div className="flex justify-center gap-4">
+        <label htmlFor="long">장기 목표</label>
+        <select name="long" id="long">
+          <option value="goal1">요리 배우기</option>
+          <option value="goal2">코딩 공부하기</option>
+          <option value="goal3">앱 배우기</option>
+          <option value="goal4">네트워크 배우기</option>
+          <option value="goal5">운동하기</option>
+        </select>
+      </div>
+      <BulletList header={"가능한 단기 목표"} />
     </div>
   );
 };
