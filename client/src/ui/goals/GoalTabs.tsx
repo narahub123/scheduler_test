@@ -23,6 +23,7 @@ export const GoalTabs = () => {
     <div className="w-full flex justify-around">
       {goalTabs.map((tab) => (
         <NavLink
+          key={tab.path}
           to={tab.path}
           className={({ isActive }) =>
             `p-2 flex-1 text-center ${

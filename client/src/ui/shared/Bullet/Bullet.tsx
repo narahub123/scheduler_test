@@ -2,27 +2,19 @@ import { useLayoutEffect, useRef, type FC } from "react";
 import {
   BulletSelector,
   SignifierSelector,
+  useBulletApi,
   type SignifierOpitionType,
   type SignifierType,
-} from "../shared";
-import type { BulletOptionType } from "../../data";
-import type { BulletType } from "../../pages";
-import type { LogItem } from "../future-log";
+} from "..";
+import type { BulletOptionType } from "../../../data";
+import type { BulletType } from "../../../pages";
+import type { LogItem } from "../../future-log";
 
 type Props = {
   itemId: string;
   log: LogItem;
   options: BulletOptionType[];
   signifierOptions: SignifierOpitionType[];
-  setNode: (el: HTMLDivElement | null) => void;
-  onChange: (id: string, text: string) => void;
-  onTypeChange: (id: string, t: BulletType) => void;
-  onSignifierChange: (id: string, t: SignifierType) => void;
-  onSplit: (id: string) => void;
-  onMergePrev: (id: string) => void;
-  onMovePrev: (id: string, column: number) => void; // ↑ 이동
-  onMoveNext: (id: string, column: number) => void; // ↓ 이동
-  onIndentDelta: (id: string, delta: 1 | -1) => void; // 들여쓰기
 };
 
 export const Bullet: FC<Props> = ({
@@ -30,16 +22,18 @@ export const Bullet: FC<Props> = ({
   log,
   options,
   signifierOptions,
-  setNode,
-  onChange,
-  onTypeChange,
-  onSignifierChange,
-  onSplit,
-  onMergePrev,
-  onMovePrev,
-  onMoveNext,
-  onIndentDelta,
 }) => {
+  const {
+    changeSignifier,
+    changeText,
+    changeType,
+    indentDelta,
+    mergePrev,
+    moveNext,
+    movePrev,
+    setNode,
+    split,
+  } = useBulletApi();
   const { type, text, indent, signifier } = log;
   const composingRef = useRef(false);
   const divRef = useRef<HTMLDivElement | null>(null);
@@ -47,7 +41,7 @@ export const Bullet: FC<Props> = ({
   // 부모가 ref를 수집하면서 내부에서도 참조
   const handleSetNode = (el: HTMLDivElement | null) => {
     divRef.current = el;
-    setNode(el);
+    setNode(itemId, el);
   };
 
   // ✅ 외부에서 log.text가 바뀔 때만 DOM에 반영(IME 중엔 금지)
@@ -78,7 +72,7 @@ export const Bullet: FC<Props> = ({
     // Tab: 들여쓰기/내어쓰기
     if (e.key === "Tab") {
       e.preventDefault();
-      onIndentDelta(itemId, e.shiftKey ? -1 : +1);
+      indentDelta(itemId, e.shiftKey ? -1 : +1);
       return;
     }
 
@@ -86,9 +80,9 @@ export const Bullet: FC<Props> = ({
       e.preventDefault();
       if (e.shiftKey) {
         document.execCommand("insertText", false, "\n");
-        onChange(itemId, e.currentTarget.textContent ?? "");
+        changeText(itemId, e.currentTarget.textContent ?? "");
       } else {
-        onSplit(itemId); // 새 Bullet 추가
+        split(itemId); // 새 Bullet 추가
       }
     }
 
@@ -100,8 +94,8 @@ export const Bullet: FC<Props> = ({
       const offset = getCaretOffsetIn(el); // 현재 문자 오프셋
 
       e.preventDefault();
-      if (e.key === "ArrowUp") onMovePrev(itemId, offset);
-      else onMoveNext(itemId, offset);
+      if (e.key === "ArrowUp") movePrev(itemId, offset);
+      else moveNext(itemId, offset);
       return;
     }
 
@@ -120,13 +114,13 @@ export const Bullet: FC<Props> = ({
       if (e.key === "ArrowLeft" && offset === 0) {
         e.preventDefault();
         // 이전 Bullet의 "끝"으로 이동: column을 아주 큰 값으로 전달
-        onMovePrev(itemId, Number.MAX_SAFE_INTEGER);
+        movePrev(itemId, Number.MAX_SAFE_INTEGER);
         return;
       }
       if (e.key === "ArrowRight" && offset === fullLen) {
         e.preventDefault();
         // 다음 Bullet의 "처음"으로 이동: column 0
-        onMoveNext(itemId, 0);
+        moveNext(itemId, 0);
         return;
       }
       // 중간 위치면 기본 동작 유지
@@ -138,23 +132,23 @@ export const Bullet: FC<Props> = ({
       if (!isAtStart) return; // 맨 앞이 아니면 브라우저 기본 삭제 허용
 
       e.preventDefault();
-      onMergePrev(itemId); // 부모에 병합 요청
+      mergePrev(itemId); // 부모에 병합 요청
     }
   };
 
   const handleInput = (e: React.FormEvent<HTMLDivElement>) => {
     if (composingRef.current) return;
-    onChange(itemId, e.currentTarget.textContent ?? "");
+    changeText(itemId, e.currentTarget.textContent ?? "");
   };
 
   const handleLoggingTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onTypeChange(itemId, e.target.value as BulletType);
+    changeType(itemId, e.target.value as BulletType);
   };
 
   const handleSignifierTypeChange = (
     e: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    onSignifierChange(itemId, e.target.value as SignifierType);
+    changeSignifier(itemId, e.target.value as SignifierType);
   };
 
   const getIsCaretAtLineStart = () => {
@@ -196,7 +190,7 @@ export const Bullet: FC<Props> = ({
         onCompositionStart={() => (composingRef.current = true)}
         onCompositionEnd={(e) => {
           composingRef.current = false;
-          onChange(itemId, e.currentTarget.textContent ?? "");
+          changeText(itemId, e.currentTarget.textContent ?? "");
         }}
         onKeyDown={handleKeyDown}
         onInput={handleInput}
