@@ -13,7 +13,8 @@ export type BulletListApi = {
   changeSignifier: (id: string, s: SignifierType) => void;
 
   // 편집 동작
-  split: (id: string) => void; // Enter(분할)
+  split: (id: string, caret: number) => void; // Enter(분할)
+  insertLineBreak: (id: string, caret: number) => void;
   mergePrev: (id: string) => void; // Backspace at start(위와 병합)
   movePrev: (id: string, column: number) => void; // ↑ 이동(열 유지)
   moveNext: (id: string, column: number) => void; // ↓ 이동(열 유지)

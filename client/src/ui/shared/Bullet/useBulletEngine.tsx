@@ -132,29 +132,21 @@ export const useBulletEngine = (opts: UseBulletEngineOptions = {}) => {
 
   // === 분할(Enter) ===
   const split = useCallback(
-    (id: string) => {
+    (id: string, caret: number) => {
       const idx = logs.findIndex((it) => it.id === id);
       if (idx < 0) return;
 
-      const el = getNode(id);
-      const full = el?.textContent ?? "";
-
-      // 현재 캐럿 위치(간단 버전: range.startOffset)
-      const pos = (() => {
-        const sel = window.getSelection();
-        if (!sel || sel.rangeCount === 0) return full.length;
-        const r = sel.getRangeAt(0);
-        return r.startOffset;
-      })();
+      const base = logs[idx];
+      const full = base.text ?? "";
+      const pos = Math.max(0, Math.min(caret, full.length));
 
       const head = full.slice(0, pos);
       const tail = full.slice(pos);
 
-      const base = logs[idx];
       const nextItem: LogItem = {
         id: makeId(),
         text: tail,
-        type: inherit.type ? base.type : base.type, // 필요 시 정책 바꿔도 됨
+        type: inherit.type ? base.type : base.type,
         signifier: inherit.signifier ? base.signifier : "",
         indent: inherit.indent ? base.indent : base.indent,
       };
@@ -166,16 +158,24 @@ export const useBulletEngine = (opts: UseBulletEngineOptions = {}) => {
       setLogs(next);
       requestAnimationFrame(() => setCaret(nextItem.id, 0));
     },
-    [
-      getNode,
-      inherit.indent,
-      inherit.signifier,
-      inherit.type,
-      logs,
-      makeId,
-      setCaret,
-      setLogs,
-    ]
+    [logs, setLogs, setCaret, makeId, inherit]
+  );
+
+  // 줄바꿈
+  const insertLineBreak = useCallback(
+    (id: string, caret: number) => {
+      const idx = logs.findIndex((it) => it.id === id);
+      if (idx < 0) return;
+      const base = logs[idx];
+      const s = base.text ?? "";
+      const pos = Math.max(0, Math.min(caret, s.length));
+      const next = s.slice(0, pos) + "\n" + s.slice(pos);
+      setLogs((prev) =>
+        prev.map((it) => (it.id === id ? { ...it, text: next } : it))
+      );
+      requestAnimationFrame(() => setCaret(id, pos + 1));
+    },
+    [logs, setLogs, setCaret]
   );
 
   // === 병합(위와) ===
@@ -257,6 +257,7 @@ export const useBulletEngine = (opts: UseBulletEngineOptions = {}) => {
       changeType,
       changeSignifier,
       split,
+      insertLineBreak,
       mergePrev,
       movePrev,
       moveNext,
@@ -277,6 +278,7 @@ export const useBulletEngine = (opts: UseBulletEngineOptions = {}) => {
       setCaret,
       setNode,
       split,
+      insertLineBreak,
     ]
   );
 
